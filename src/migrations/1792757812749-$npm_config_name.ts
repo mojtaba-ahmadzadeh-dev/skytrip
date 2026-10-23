@@ -1,10 +1,4 @@
-
-import {
-  MigrationInterface,
-  QueryRunner,
-  Table,
-  TableIndex,
-} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 import { EntityNames } from '../common/enums/entity.enum.js';
 
 export class CreateUsers1792757812749 implements MigrationInterface {
@@ -21,10 +15,10 @@ export class CreateUsers1792757812749 implements MigrationInterface {
           columns: [
             {
               name: 'id',
-              type: 'uuid',
+              type: 'integer',
               isPrimary: true,
-              generationStrategy: 'uuid',
-              default: 'gen_random_uuid()',
+              isGenerated: true,
+              generationStrategy: 'increment',
             },
             {
               name: 'firstName',
