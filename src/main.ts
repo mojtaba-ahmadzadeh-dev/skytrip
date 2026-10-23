@@ -1,10 +1,25 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule, ObserveInstrument } from './app.module.js';
+import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './module/app/app.module.js';
+import { SwaggerConfigInit } from './config/swagger.config.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    instrument: ObserveInstrument,
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
+  SwaggerConfigInit(app);
+  const port = Number(process.env.PORT) || 3000;
+  await app.listen(port, () => {
+    console.log(`http://localhost:${port}`);
+    console.log(`swagger: http://localhost:${port}/swagger`);
   });
-  await app.listen(process.env.PORT ?? 3000);
 }
-await bootstrap();
+bootstrap();
