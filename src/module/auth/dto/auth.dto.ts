@@ -47,3 +47,15 @@ export class RegisterDto {
   @IsNotEmpty()
   confirmPassword: string;
 }
+
+export class LoginDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  identifier: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  password: string;
+}
