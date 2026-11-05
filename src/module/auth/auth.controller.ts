@@ -1,7 +1,21 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
-import type { Response } from 'express';
-
-import { LoginDto, RegisterDto } from './dto/auth.dto.js';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
+import type { Request, Response } from 'express';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  RegisterDto,
+  ResetPasswordDto,
+} from './dto/auth.dto.js';
 import { AuthService } from './service/auth.service.js';
 import { AuthMessages } from '../../common/enums/message.enum.js';
 
@@ -53,6 +67,32 @@ class AuthController {
       message: AuthMessages.LOGIN_SUCCESS,
       data: result.user,
     };
+  }
+
+  @Delete('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const token = req.cookies?.access_token;
+
+    if (!token) {
+      throw new UnauthorizedException('توکن احراز هویت یافت نشد');
+    }
+
+    const payload = await this.authService.verifyAccessToken(token);
+
+    return this.authService.logout(Number(payload.sub), res);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
   }
 
   private setAuthCookies(

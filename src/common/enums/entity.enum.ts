@@ -1,3 +1,4 @@
 export enum EntityNames {
-    UserEntity = "user"
+    UserEntity = "user",
+    OtpEntity = "otp"
 }

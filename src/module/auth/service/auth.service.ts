@@ -9,14 +9,24 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../user/entities/user.entity.js';
 import { JwtTokenService } from './token.service.js';
-import { LoginDto, RegisterDto } from '../dto/auth.dto.js';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  RegisterDto,
+  ResetPasswordDto,
+} from '../dto/auth.dto.js';
 import { AuthMessages } from '../../../common/enums/message.enum.js';
+import { Response } from 'express';
+import { randomInt } from 'crypto';
+import { OtpEntity } from '../../user/entities/otp.entity.js';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(OtpEntity)
+    private readonly otpRepository: Repository<OtpEntity>,
     private readonly jwtTokenService: JwtTokenService,
   ) {}
 
@@ -111,6 +121,35 @@ export class AuthService {
       ...tokens,
     };
   }
+  async logout(userId: number, response: Response) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('کاربر پیدا نشد');
+    }
+
+    await this.userRepository.delete(userId);
+
+    response.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+
+    response.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+
+    return {
+      message: 'حساب کاربری با موفقیت حذف و خروج انجام شد',
+    };
+  }
   private validatePasswords(password: string, confirmPassword: string): void {
     if (password !== confirmPassword) {
       throw new UnprocessableEntityException(AuthMessages.PASSWORD_MISMATCH);
@@ -148,5 +187,108 @@ export class AuthService {
     }
 
     throw new ConflictException(AuthMessages.PHONE_ALREADY_EXISTS);
+  }
+  async verifyAccessToken(token: string) {
+    try {
+      return await this.jwtTokenService.verifyAccessToken(token);
+    } catch {
+      throw new UnauthorizedException('توکن نامعتبر یا منقضی شده است');
+    }
+  }
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const email = forgotPasswordDto.email.trim().toLowerCase();
+
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      return {
+        message:
+          'اگر این ایمیل در سیستم ثبت شده باشد، کد بازیابی ارسال خواهد شد',
+      };
+    }
+
+    // Generate a six-digit OTP
+    const otpCode = randomInt(100000, 1000000).toString();
+
+    // OTP expiration: 10 minutes
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    let otp = await this.otpRepository.findOne({
+      where: { userId: user.id },
+    });
+
+    if (otp) {
+      otp.code = otpCode;
+      otp.expiresIn = expiresAt;
+      otp.method = 'email';
+    } else {
+      otp = this.otpRepository.create({
+        userId: user.id,
+        code: otpCode,
+        expiresIn: expiresAt,
+        method: 'email',
+      });
+    }
+
+    await this.otpRepository.save(otp);
+
+    return {
+      message: 'کد بازیابی رمز عبور با موفقیت ایجاد شد',
+      ...(process.env.NODE_ENV !== 'production' && {
+        developmentOtp: otpCode,
+      }),
+    };
+  }
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const email = resetPasswordDto.email.trim().toLowerCase();
+
+    this.validatePasswords(
+      resetPasswordDto.newPassword,
+      resetPasswordDto.confirmPassword,
+    );
+
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('کد بازیابی نامعتبر است');
+    }
+
+    const otp = await this.otpRepository.findOne({
+      where: { userId: user.id },
+    });
+
+    if (!otp) {
+      throw new UnauthorizedException('کد بازیابی یافت نشد');
+    }
+
+    // Check OTP expiration
+    if (otp.expiresIn.getTime() < Date.now()) {
+      await this.otpRepository.delete(otp.id);
+
+      throw new UnauthorizedException('کد بازیابی منقضی شده است');
+    }
+
+    // Compare plain OTP codes
+    if (resetPasswordDto.code !== otp.code) {
+      throw new UnauthorizedException('کد بازیابی نامعتبر است');
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(resetPasswordDto.newPassword, 12);
+
+    user.password = hashedPassword;
+
+    await this.userRepository.save(user);
+
+    // Delete OTP after successful password reset
+    await this.otpRepository.delete(otp.id);
+
+    return {
+      message: 'رمز عبور با موفقیت تغییر کرد',
+    };
   }
 }
