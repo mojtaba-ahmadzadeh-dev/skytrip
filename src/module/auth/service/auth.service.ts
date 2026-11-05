@@ -15,7 +15,10 @@ import {
   RegisterDto,
   ResetPasswordDto,
 } from '../dto/auth.dto.js';
-import { AuthMessages } from '../../../common/enums/message.enum.js';
+import {
+  AuthMessages,
+  UserMessages,
+} from '../../../common/enums/message.enum.js';
 import { Response } from 'express';
 import { randomInt } from 'crypto';
 import { OtpEntity } from '../../user/entities/otp.entity.js';
@@ -127,10 +130,8 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('کاربر پیدا نشد');
+      throw new UnauthorizedException(UserMessages.USER_NOT_FOUND);
     }
-
-    await this.userRepository.delete(userId);
 
     response.clearCookie('access_token', {
       httpOnly: true,
@@ -147,7 +148,7 @@ export class AuthService {
     });
 
     return {
-      message: 'حساب کاربری با موفقیت حذف و خروج انجام شد',
+      message: AuthMessages.LOGOUT_SUCCESS,
     };
   }
   private validatePasswords(password: string, confirmPassword: string): void {
@@ -192,7 +193,7 @@ export class AuthService {
     try {
       return await this.jwtTokenService.verifyAccessToken(token);
     } catch {
-      throw new UnauthorizedException('توکن نامعتبر یا منقضی شده است');
+      throw new UnauthorizedException(AuthMessages.INVALID_TOKEN);
     }
   }
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
@@ -254,7 +255,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('کد بازیابی نامعتبر است');
+      throw new UnauthorizedException(AuthMessages.OTP_INVALID);
     }
 
     const otp = await this.otpRepository.findOne({
@@ -262,33 +263,29 @@ export class AuthService {
     });
 
     if (!otp) {
-      throw new UnauthorizedException('کد بازیابی یافت نشد');
+      throw new UnauthorizedException(AuthMessages.OTP_NOT_FOUND);
     }
 
-    // Check OTP expiration
     if (otp.expiresIn.getTime() < Date.now()) {
       await this.otpRepository.delete(otp.id);
 
-      throw new UnauthorizedException('کد بازیابی منقضی شده است');
+      throw new UnauthorizedException(AuthMessages.OTP_EXPIRED);
     }
 
-    // Compare plain OTP codes
     if (resetPasswordDto.code !== otp.code) {
-      throw new UnauthorizedException('کد بازیابی نامعتبر است');
+      throw new UnauthorizedException(AuthMessages.OTP_INVALID);
     }
 
-    // Hash the new password
     const hashedPassword = await bcrypt.hash(resetPasswordDto.newPassword, 12);
 
     user.password = hashedPassword;
 
     await this.userRepository.save(user);
 
-    // Delete OTP after successful password reset
     await this.otpRepository.delete(otp.id);
 
     return {
-      message: 'رمز عبور با موفقیت تغییر کرد',
+      message: AuthMessages.PASSWORD_RESET_SUCCESS,
     };
   }
 }
