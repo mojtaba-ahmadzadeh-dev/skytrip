@@ -1,73 +1,96 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from 'typeorm';
+
 import { EntityNames } from '../common/enums/entity.enum.js';
 
-export class CreateUsers1792757812749 implements MigrationInterface {
+export class CreateUsers1792757812749
+  implements MigrationInterface
+{
   public async up(queryRunner: QueryRunner): Promise<void> {
     const tableName = EntityNames.UserEntity;
 
-    // ========================
-    // USERS TABLE
-    // ========================
-    if (!(await queryRunner.hasTable(tableName))) {
-      await queryRunner.createTable(
-        new Table({
-          name: tableName,
-          columns: [
-            {
-              name: 'id',
-              type: 'integer',
-              isPrimary: true,
-              isGenerated: true,
-              generationStrategy: 'increment',
-            },
-            {
-              name: 'firstName',
-              type: 'varchar',
-              length: '100',
-            },
-            {
-              name: 'lastName',
-              type: 'varchar',
-              length: '100',
-            },
-            {
-              name: 'phoneNumber',
-              type: 'varchar',
-              length: '20',
-              isUnique: true,
-            },
-            {
-              name: 'email',
-              type: 'varchar',
-              length: '255',
-              isUnique: true,
-            },
-            {
-              name: 'username',
-              type: 'varchar',
-              length: '50',
-              isUnique: true,
-            },
-            {
-              name: 'password',
-              type: 'varchar',
-              length: '255',
-            },
-            {
-              name: 'createdAt',
-              type: 'timestamptz',
-              default: 'now()',
-            },
-            {
-              name: 'updatedAt',
-              type: 'timestamptz',
-              default: 'now()',
-            },
-          ],
-        }),
-        true,
-      );
-    }
+    if (await queryRunner.hasTable(tableName)) return;
+
+    await queryRunner.createTable(
+      new Table({
+        name: tableName,
+        columns: [
+          {
+            name: 'id',
+            type: 'integer',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          {
+            name: 'firstName',
+            type: 'varchar',
+            length: '100',
+          },
+          {
+            name: 'lastName',
+            type: 'varchar',
+            length: '100',
+          },
+          {
+            name: 'phoneNumber',
+            type: 'varchar',
+            length: '20',
+            isUnique: true,
+          },
+          {
+            name: 'email',
+            type: 'varchar',
+            length: '255',
+            isUnique: true,
+          },
+          {
+            name: 'username',
+            type: 'varchar',
+            length: '50',
+            isUnique: true,
+          },
+          {
+            name: 'password',
+            type: 'varchar',
+            length: '255',
+          },
+          {
+            name: 'role_id',
+            type: 'integer',
+            isNullable: false,
+          },
+          {
+            name: 'createdAt',
+            type: 'timestamptz',
+            default: 'now()',
+          },
+          {
+            name: 'updatedAt',
+            type: 'timestamptz',
+            default: 'now()',
+          },
+        ],
+      }),
+      true,
+    );
+
+    await queryRunner.createForeignKey(
+      tableName,
+      new TableForeignKey({
+        name: 'FK_users_roles_role_id',
+        columnNames: ['role_id'],
+        referencedTableName: EntityNames.Roles,
+        referencedColumnNames: ['id'],
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -22,7 +23,9 @@ import {
 import { Response } from 'express';
 import { randomInt } from 'crypto';
 import { OtpEntity } from '../../user/entities/otp.entity.js';
-
+import { RoleEntity } from '../../RBAC/entities/role.entity.js';
+import { Roles } from '../../../common/enums/role.enum.js';
+import { DataSource } from 'typeorm';
 @Injectable()
 export class AuthService {
   constructor(
@@ -30,6 +33,9 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(OtpEntity)
     private readonly otpRepository: Repository<OtpEntity>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
+    private readonly dataSource: DataSource,
     private readonly jwtTokenService: JwtTokenService,
   ) {}
 
@@ -58,16 +64,42 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const user = this.userRepository.create({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      phoneNumber: normalizedPhone,
-      email: normalizedEmail,
-      username: normalizedUsername,
-      password: hashedPassword,
-    });
+    // Registration and first-user role assignment must be atomic.
+    const savedUser = await this.dataSource.transaction(async (manager) => {
+      // PostgreSQL transaction-level lock prevents two simultaneous
+      // registrations from both becoming the first user.
+      await manager.query('SELECT pg_advisory_xact_lock($1)', [7242026]);
 
-    const savedUser = await this.userRepository.save(user);
+      const userRepository = manager.getRepository(User);
+      const roleRepository = manager.getRepository(RoleEntity);
+
+      const userCount = await userRepository.count();
+
+      const roleName = userCount === 0 ? Roles.SUPER_ADMIN : Roles.USER;
+
+      const role = await roleRepository.findOne({
+        where: { name: roleName },
+      });
+
+      if (!role) {
+        throw new NotFoundException(
+          `Role ${roleName} not found. Please seed roles first.`,
+        );
+      }
+
+      const user = userRepository.create({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phoneNumber: normalizedPhone,
+        email: normalizedEmail,
+        username: normalizedUsername,
+        password: hashedPassword,
+        roleId: role.id,
+        role,
+      });
+
+      return userRepository.save(user);
+    });
 
     const tokens = await this.jwtTokenService.generateTokens(savedUser.id);
 
@@ -79,6 +111,7 @@ export class AuthService {
         phoneNumber: savedUser.phoneNumber,
         email: savedUser.email,
         username: savedUser.username,
+        role: savedUser.role?.name,
         createdAt: savedUser.createdAt,
       },
       ...tokens,

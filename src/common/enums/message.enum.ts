@@ -34,3 +34,24 @@ export enum UserMessages {
   USER_UNBANNED = 'کاربر از حالت مسدود خارج شد',
   USER_DELETED = 'کاربر مورد نظر با موفقیت حذف شد',
 }
+
+export enum RbacMessages {
+  ROLE_NOT_FOUND = 'نقش مورد نظر پیدا نشد',
+  PERMISSION_NOT_FOUND = 'دسترسی مورد نظر پیدا نشد',
+  PERMISSION_ALREADY_ASSIGNED = 'این دسترسی قبلاً به نقش مورد نظر اختصاص داده شده است',
+  PERMISSION_ASSIGNED_SUCCESSFULLY = 'دسترسی با موفقیت به نقش اختصاص داده شد',
+  PERMISSION_REMOVED_SUCCESSFULLY = 'دسترسی با موفقیت از نقش حذف شد',
+  ROLE_CREATED_SUCCESSFULLY = 'نقش جدید با موفقیت ساخته شد',
+  ROLE_UPDATED_SUCCESSFULLY = 'نقش با موفقیت به‌روزرسانی شد',
+  ROLE_DELETED_SUCCESSFULLY = 'نقش با موفقیت حذف شد',
+  ACCESS_DENIED = 'شما دسترسی لازم برای این عملیات را ندارید',
+  ALREADY_PERMISSION = 'این دسترسی قبلا به نقش مورد نظر اختصاص داده شده است',
+  NOTFOUND_ROLE = 'نقش مورد نظر یافت نشد',
+  NOTFOUND_PERMISSION = 'دسترسی مورد نظر یافت نشد',
+  PERMISSION_ALREADY_EXISTS = 'این دسترسی قبلاً وجود دارد',
+  UNAUTHORIZED = 'لطفا ابتدا وارد شوید',
+  INVALID_TOKEN = 'توکن نامعتبر یا منقضی شده است',
+  INVALID_TOKEN_PAYLOAD = 'اطلاعات توکن نامعتبر است',
+  USER_NOT_FOUND = 'کاربر یافت نشد',
+  FORBIDDEN = 'شما دسترسی به این عملیات ندارید',
+}

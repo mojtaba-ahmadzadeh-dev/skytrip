@@ -5,61 +5,70 @@ import {
   Table,
   TableForeignKey,
 } from 'typeorm';
+
 import { EntityNames } from '../common/enums/entity.enum.js';
 
-export class CreateOtp1793889000000 implements MigrationInterface {
+export class CreateOtp1793889000000
+  implements MigrationInterface
+{
   public async up(queryRunner: QueryRunner): Promise<void> {
-    if (!(await queryRunner.hasTable('otp'))) {
-      await queryRunner.createTable(
-        new Table({
-          name: EntityNames.OtpEntity,
-          columns: [
-            {
-              name: 'id',
-              type: 'integer',
-              isPrimary: true,
-              isGenerated: true,
-              generationStrategy: 'increment',
-            },
-            {
-              name: 'code',
-              type: 'varchar',
-              length: '255',
-            },
-            {
-              name: 'expiresIn',
-              type: 'timestamptz',
-            },
-            {
-              name: 'userId',
-              type: 'integer',
-              isUnique: true,
-            },
-            {
-              name: 'method',
-              type: 'varchar',
-              isNullable: true,
-            },
-          ],
-        }),
-        true,
-      );
+    const tableName = EntityNames.OtpEntity;
 
-      await queryRunner.createForeignKey(
-        'otp',
-        new TableForeignKey({
-          columnNames: ['userId'],
-          referencedTableName: 'user',
-          referencedColumnNames: ['id'],
-          onDelete: 'CASCADE',
-        }),
-      );
-    }
+    if (await queryRunner.hasTable(tableName)) return;
+
+    await queryRunner.createTable(
+      new Table({
+        name: tableName,
+        columns: [
+          {
+            name: 'id',
+            type: 'integer',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          {
+            name: 'code',
+            type: 'varchar',
+            length: '255',
+          },
+          {
+            name: 'expiresIn',
+            type: 'timestamptz',
+          },
+          {
+            name: 'userId',
+            type: 'integer',
+            isUnique: true,
+          },
+          {
+            name: 'method',
+            type: 'varchar',
+            isNullable: true,
+          },
+        ],
+      }),
+      true,
+    );
+
+    await queryRunner.createForeignKey(
+      tableName,
+      new TableForeignKey({
+        name: 'FK_otp_user',
+        columnNames: ['userId'],
+        referencedTableName: EntityNames.UserEntity,
+        referencedColumnNames: ['id'],
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    if (await queryRunner.hasTable('otp')) {
-      await queryRunner.dropTable('otp', true);
+    const tableName = EntityNames.OtpEntity;
+
+    if (await queryRunner.hasTable(tableName)) {
+      await queryRunner.dropTable(tableName, true);
     }
   }
 }

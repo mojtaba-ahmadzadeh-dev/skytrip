@@ -1,4 +1,6 @@
 export enum EntityNames {
     UserEntity = "user",
-    OtpEntity = "otp"
+    OtpEntity = "otp",
+    Permissions = "permissions",
+    Roles = "roles"
 }
