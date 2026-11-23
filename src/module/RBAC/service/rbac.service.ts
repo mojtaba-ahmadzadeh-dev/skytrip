@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -207,4 +208,64 @@ export class RbacService {
       message: RbacMessages.ROLE_DELETED_SUCCESSFULLY,
     };
   }
+
+
+  async assignRoleToUser(userId: number, roleId: number) {
+    // Find user with current role
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: {
+        role: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('کاربر موردنظر یافت نشد');
+    }
+
+    // Prevent changing the Super Admin account
+    if (user.role?.name?.trim().toLowerCase() === 'super_admin') {
+      throw new ForbiddenException(
+        'امکان تغییر نقش حساب Super Admin وجود ندارد',
+      );
+    }
+
+    // Find requested role
+    const role = await this.roleRepository.findOne({
+      where: { id: roleId },
+    });
+
+    if (!role) {
+      throw new NotFoundException(RbacMessages.NOTFOUND_ROLE);
+    }
+
+    // Prevent assigning Super Admin role
+    if (role.name.trim().toLowerCase() === 'super_admin') {
+      throw new ForbiddenException(
+        'امکان اختصاص نقش Super Admin از این مسیر وجود ندارد',
+      );
+    }
+
+    // Check if user already has this role
+    if (user.role?.id === role.id) {
+      throw new ConflictException(
+        'این نقش از قبل به کاربر اختصاص داده شده است',
+      );
+    }
+
+    // Assign role to user
+    user.role = role;
+
+    const updatedUser = await this.userRepo.save(user);
+
+    return {
+      message: 'نقش کاربر با موفقیت تغییر کرد',
+      data: {
+        userId: updatedUser.id,
+        roleId: role.id,
+        roleName: role.name,
+      },
+    };
+  }
+
 }

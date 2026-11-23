@@ -1,13 +1,21 @@
-import { Controller, Get, Post, Body, UseGuards, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Patch,
+} from '@nestjs/common';
 
 import { ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../../common/decorator/permission.decorator.js';
 import { PermissionsList } from '../../common/constants/permissions.constants.js';
 import { RbacGuard } from './guard/rbac.guard.js';
-import { CreateRbacDto, CreateRoleDto } from './dto/rbac.dto.js';
+import { AssignRoleDto, CreateRbacDto, CreateRoleDto } from './dto/rbac.dto.js';
 import { RbacService } from './service/rbac.service.js';
-
-
 
 @Controller('rbac')
 @ApiTags('RBAC')
@@ -53,5 +61,13 @@ export class RbacController {
   @Delete('role/:id')
   deleteRole(@Param('id') id: number) {
     return this.rbacService.deleteRole(id);
+  }
+
+  @Patch('users/:userId/role')
+  assignRoleToUser(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Body() dto: AssignRoleDto,
+  ) {
+    return this.rbacService.assignRoleToUser(userId, dto.roleId);
   }
 }
