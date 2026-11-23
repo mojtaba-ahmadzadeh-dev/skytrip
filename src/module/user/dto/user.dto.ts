@@ -1,5 +1,7 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsEmail,
+  IsNotEmpty,
   IsOptional,
   IsString,
   Length,
@@ -36,4 +38,25 @@ export class UpdateProfileDto {
     message: 'نام کاربری فقط می‌تواند شامل حروف انگلیسی، عدد، نقطه و زیرخط باشد',
   })
   username?: string;
+}
+
+export class RequestEmailChangeDto {
+  @ApiProperty({
+    example: 'newemail@gmail.com',
+    description: 'New email address',
+  })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}
+
+export class VerifyEmailChangeDto {
+  @ApiProperty({
+    example: '123456',
+    description: 'Six-digit OTP code',
+  })
+  @IsString()
+  @Length(6, 6)
+  @IsNotEmpty()
+  code: string;
 }

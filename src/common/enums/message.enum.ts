@@ -32,12 +32,18 @@ export enum UserMessages {
   USER_BANNED = 'کاربر با موفقیت مسدود شد',
   USER_UNBANNED = 'کاربر از حالت مسدود خارج شد',
   USER_DELETED = 'کاربر مورد نظر با موفقیت حذف شد',
-
   USER_UNAUTHORIZED = 'لطفا ابتدا وارد شوید',
   USER_PROFILE_RETRIEVED = 'اطلاعات کاربر با موفقیت دریافت شد',
   USER_PROFILE_UPDATED = 'اطلاعات کاربر با موفقیت به‌روزرسانی شد',
   USERNAME_ALREADY_EXISTS = 'این نام کاربری قبلاً ثبت شده است',
   NO_PROFILE_CHANGES = 'حداقل یک فیلد برای ویرایش ارسال کنید',
+  EMAIL_CHANGE_OTP_SENT = 'کد تأیید تغییر ایمیل با موفقیت ایجاد شد.',
+  EMAIL_CHANGE_SUCCESS = 'آدرس ایمیل شما با موفقیت تغییر کرد.',
+  EMAIL_ALREADY_EXISTS = 'این آدرس ایمیل قبلاً توسط کاربر دیگری ثبت شده است.',
+  EMAIL_SAME_AS_CURRENT = 'ایمیل جدید با ایمیل فعلی شما یکسان است.',
+  EMAIL_OTP_NOT_FOUND = 'کد تأیید تغییر ایمیل یافت نشد.',
+  EMAIL_OTP_INVALID = 'کد تأیید واردشده نامعتبر است.',
+  EMAIL_OTP_EXPIRED = 'مهلت اعتبار کد تأیید به پایان رسیده است.',
 }
 
 export enum RbacMessages {

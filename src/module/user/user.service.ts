@@ -13,7 +13,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsRelations, Repository } from 'typeorm';
 import { User } from './entities/user.entity.js';
 import { UserMessages } from '../../common/enums/message.enum.js';
-import { UpdateProfileDto } from './dto/user.dto.js';
+import { RequestEmailChangeDto, UpdateProfileDto, VerifyEmailChangeDto } from './dto/user.dto.js';
+import { randomInt } from 'crypto';
+import { OtpEntity } from './entities/otp.entity.js';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService {
@@ -22,6 +24,8 @@ export class UserService {
     private readonly request: Request,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(OtpEntity)
+    private readonly otpRepository: Repository<OtpEntity>,
   ) {}
 
   async getMe() {
@@ -92,6 +96,142 @@ export class UserService {
         phoneNumber: updatedUser.phoneNumber,
         email: updatedUser.email,
         username: updatedUser.username,
+        updatedAt: updatedUser.updatedAt,
+      },
+    };
+  }
+   async requestEmailChange(dto: RequestEmailChangeDto) {
+    const userId = this.getUserId();
+
+    const user = await this.findUserOrFail(userId);
+
+    const newEmail = dto.email.trim().toLowerCase();
+
+    if (newEmail === user.email.toLowerCase()) {
+      throw new BadRequestException(
+        UserMessages.EMAIL_SAME_AS_CURRENT,
+      );
+    }
+
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        email: newEmail,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingUser && existingUser.id !== userId) {
+      throw new ConflictException(
+        UserMessages.EMAIL_ALREADY_EXISTS,
+      );
+    }
+
+    const code = randomInt(100000, 1000000).toString();
+
+    const expiresIn = new Date(
+      Date.now() + 10 * 60 * 1000,
+    );
+
+    let otp = await this.otpRepository.findOne({
+      where: {
+        userId,
+      },
+    });
+
+    if (otp) {
+      otp.code = code;
+      otp.expiresIn = expiresIn;
+      otp.method = 'change_email';
+      otp.targetEmail = newEmail;
+    } else {
+      otp = this.otpRepository.create({
+        userId,
+        code,
+        expiresIn,
+        method: 'change_email',
+        targetEmail: newEmail,
+      });
+    }
+
+    await this.otpRepository.save(otp);
+
+    return {
+      message: UserMessages.EMAIL_CHANGE_OTP_SENT,
+      data: {
+        email: newEmail,
+        expiresIn,
+        ...(process.env.NODE_ENV !== 'production' && {
+          developmentOtp: code,
+        }),
+      },
+    };
+  }
+  async verifyEmailChange(dto: VerifyEmailChangeDto) {
+    const userId = this.getUserId();
+
+    const user = await this.findUserOrFail(userId);
+
+    const otp = await this.otpRepository.findOne({
+      where: {
+        userId,
+        method: 'change_email',
+      },
+    });
+
+    if (!otp) {
+      throw new NotFoundException(
+        UserMessages.EMAIL_OTP_NOT_FOUND,
+      );
+    }
+
+    if (otp.expiresIn.getTime() <= Date.now()) {
+      await this.otpRepository.remove(otp);
+
+      throw new BadRequestException(
+        UserMessages.EMAIL_OTP_EXPIRED,
+      );
+    }
+
+    if (otp.code !== dto.code) {
+      throw new BadRequestException(
+        UserMessages.EMAIL_OTP_INVALID,
+      );
+    }
+
+    if (!otp.targetEmail) {
+      throw new BadRequestException(
+        UserMessages.EMAIL_OTP_INVALID,
+      );
+    }
+
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        email: otp.targetEmail,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingUser && existingUser.id !== userId) {
+      throw new ConflictException(
+        UserMessages.EMAIL_ALREADY_EXISTS,
+      );
+    }
+
+    user.email = otp.targetEmail;
+
+    const updatedUser = await this.userRepository.save(user);
+
+    await this.otpRepository.remove(otp);
+
+    return {
+      message: UserMessages.EMAIL_CHANGE_SUCCESS,
+      data: {
+        id: updatedUser.id,
+        email: updatedUser.email,
         updatedAt: updatedUser.updatedAt,
       },
     };

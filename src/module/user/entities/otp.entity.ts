@@ -4,7 +4,7 @@ import {
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
-}  from 'typeorm';
+} from 'typeorm';
 import type { Relation } from 'typeorm';
 import { User } from '../../user/entities/user.entity.js';
 
@@ -12,19 +12,20 @@ import { User } from '../../user/entities/user.entity.js';
 export class OtpEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
-
   @Column({ type: 'varchar', length: 255 })
   code: string;
-
   @Column({ type: 'timestamptz' })
   expiresIn: Date;
-
   @Column({ type: 'integer', unique: true })
   userId: number;
-
   @Column({ type: 'varchar', nullable: true })
   method: string | null;
-
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  targetEmail: string | null;
   @OneToOne(() => User, (user) => user.otp, {
     onDelete: 'CASCADE',
   })
