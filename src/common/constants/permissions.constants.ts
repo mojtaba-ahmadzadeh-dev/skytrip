@@ -25,6 +25,7 @@ export const PermissionsList = {
   REMOVE_USER: 'remove:user',
   BAN_USER: 'ban:user',
   UNBAN_USER: 'unban:user',
+  UPDATE_MY_PROFILE: 'update:my_profile',
 
   // ==================== FLIGHT ====================
   CREATE_FLIGHT: 'create:flight',

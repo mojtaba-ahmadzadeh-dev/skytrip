@@ -24,7 +24,6 @@ export enum AuthMessages {
   PASSWORD_RESET_SUCCESS = 'رمز عبور با موفقیت تغییر کرد',
 }
 
-
 export enum UserMessages {
   USER_NOT_FOUND = 'کاربر با آیدی مورد نظر یافت نشد',
   INVALID_ROLE = 'نقش معتبر نیست',
@@ -33,6 +32,12 @@ export enum UserMessages {
   USER_BANNED = 'کاربر با موفقیت مسدود شد',
   USER_UNBANNED = 'کاربر از حالت مسدود خارج شد',
   USER_DELETED = 'کاربر مورد نظر با موفقیت حذف شد',
+
+  USER_UNAUTHORIZED = 'لطفا ابتدا وارد شوید',
+  USER_PROFILE_RETRIEVED = 'اطلاعات کاربر با موفقیت دریافت شد',
+  USER_PROFILE_UPDATED = 'اطلاعات کاربر با موفقیت به‌روزرسانی شد',
+  USERNAME_ALREADY_EXISTS = 'این نام کاربری قبلاً ثبت شده است',
+  NO_PROFILE_CHANGES = 'حداقل یک فیلد برای ویرایش ارسال کنید',
 }
 
 export enum RbacMessages {
