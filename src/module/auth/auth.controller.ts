@@ -19,7 +19,7 @@ import {
 import { AuthService } from './service/auth.service.js';
 import { AuthMessages } from '../../common/enums/message.enum.js';
 
-@Controller('Auth')
+@Controller('auth')
 class AuthController {
   constructor(private readonly authService: AuthService) {}
 

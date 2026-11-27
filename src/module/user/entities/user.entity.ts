@@ -32,6 +32,8 @@ export class User extends BaseEntity {
   password: string;
   @Column({ name: 'role_id' })
   roleId: number;
+  @Column({ type: 'boolean', default: false })
+  isBanned: boolean;
   @ManyToOne(() => RoleEntity, { eager: false, nullable: false })
   @JoinColumn({ name: 'role_id' })
   role: RoleEntity;

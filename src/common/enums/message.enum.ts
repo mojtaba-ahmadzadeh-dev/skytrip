@@ -24,7 +24,6 @@ export enum AuthMessages {
   PASSWORD_RESET_SUCCESS = 'رمز عبور با موفقیت تغییر کرد',
 }
 
-
 export enum UserMessages {
   USER_NOT_FOUND = 'کاربر با آیدی مورد نظر یافت نشد',
   INVALID_ROLE = 'نقش معتبر نیست',
@@ -33,6 +32,31 @@ export enum UserMessages {
   USER_BANNED = 'کاربر با موفقیت مسدود شد',
   USER_UNBANNED = 'کاربر از حالت مسدود خارج شد',
   USER_DELETED = 'کاربر مورد نظر با موفقیت حذف شد',
+  USER_UNAUTHORIZED = 'لطفا ابتدا وارد شوید',
+  USER_PROFILE_RETRIEVED = 'اطلاعات کاربر با موفقیت دریافت شد',
+  USER_PROFILE_UPDATED = 'اطلاعات کاربر با موفقیت به‌روزرسانی شد',
+  USERNAME_ALREADY_EXISTS = 'این نام کاربری قبلاً ثبت شده است',
+  NO_PROFILE_CHANGES = 'حداقل یک فیلد برای ویرایش ارسال کنید',
+  EMAIL_CHANGE_OTP_SENT = 'کد تأیید تغییر ایمیل با موفقیت ایجاد شد.',
+  EMAIL_CHANGE_SUCCESS = 'آدرس ایمیل شما با موفقیت تغییر کرد.',
+  EMAIL_ALREADY_EXISTS = 'این آدرس ایمیل قبلاً توسط کاربر دیگری ثبت شده است.',
+  EMAIL_SAME_AS_CURRENT = 'ایمیل جدید با ایمیل فعلی شما یکسان است.',
+  EMAIL_OTP_NOT_FOUND = 'کد تأیید تغییر ایمیل یافت نشد.',
+  EMAIL_OTP_INVALID = 'کد تأیید واردشده نامعتبر است.',
+  EMAIL_OTP_EXPIRED = 'مهلت اعتبار کد تأیید به پایان رسیده است.',
+  CURRENT_PASSWORD_INVALID = 'Current password is incorrect',
+  PASSWORD_MISMATCH = 'Password confirmation does not match',
+  NEW_PASSWORD_SAME_AS_CURRENT = 'New password must be different from current password',
+  PASSWORD_UPDATED = 'Password updated successfully',
+  PASSWORD_RESET_OTP_SENT = 'Password reset OTP generated successfully',
+  USER_EMAIL_NOT_FOUND = 'User email address not found',
+  USER_RETRIEVED = 'User retrieved successfully',
+  USER_ALREADY_BANNED = 'این کاربر قبلاً مسدود شده است',
+  USER_ALREADY_ACTIVE = 'این کاربر در حال حاضر مسدود نیست',
+  CANNOT_BAN_YOURSELF = 'امکان تغییر وضعیت حساب کاربری خودتان وجود ندارد',
+  CANNOT_CHANGE_SUPER_ADMIN_STATUS = 'امکان تغییر وضعیت سوپر ادمین وجود ندارد',
+  USER_UPDATED = 'اطلاعات کاربر با موفقیت ویرایش شد',
+  PHONE_ALREADY_EXISTS = 'این شماره تلفن قبلاً ثبت شده است',
 }
 
 export enum RbacMessages {
