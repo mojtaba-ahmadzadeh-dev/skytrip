@@ -1,4 +1,3 @@
-
 export const PermissionsList = {
   // ==================== RBAC ====================
   CREATE_ROLE: 'create:role',
@@ -25,6 +24,7 @@ export const PermissionsList = {
   REMOVE_USER: 'remove:user',
   BAN_USER: 'ban:user',
   UNBAN_USER: 'unban:user',
+  MANAGE_USER_STATUS: 'manage:user_status',
   UPDATE_MY_PROFILE: 'update:my_profile',
 
   // ==================== FLIGHT ====================
@@ -96,7 +96,6 @@ export const PermissionsList = {
   FIND_REPORTS: 'find:reports',
   FIND_SALES_REPORTS: 'find:sales_reports',
   FIND_BOOKING_REPORTS: 'find:booking_reports',
-
 } as const;
 
 export type PermissionType =
