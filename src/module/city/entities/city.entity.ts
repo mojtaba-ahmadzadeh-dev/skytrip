@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, Index } from 'typeorm';
 
 import { BaseEntity } from '../../../common/abestract/base.entity.js';
 import { EntityNames } from '../../../common/enums/entity.enum.js';
@@ -18,4 +18,6 @@ export class City extends BaseEntity {
   countryCode: string;
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
+  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
+  deletedAt: Date | null;
 }
