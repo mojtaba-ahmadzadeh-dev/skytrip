@@ -5,6 +5,7 @@ import { TypeOrmDbConfig } from '../../config/typeorm.config.js';
 import { AuthModule } from '../auth/auth.module.js';
 import { UserModule } from '../user/user.module.js';
 import { RBACModule } from '../RBAC/rbac.module.js';
+import { PassengerModule } from '../passenger/passenger.module.js';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RBACModule } from '../RBAC/rbac.module.js';
     AuthModule,
     UserModule,
     RBACModule,
+    PassengerModule
   ],
 })
 export class AppModule {}

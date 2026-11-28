@@ -69,6 +69,8 @@ export const PermissionsList = {
   FIND_ONE_PASSENGER: 'findOne:passenger',
   UPDATE_PASSENGER: 'update:passenger',
   REMOVE_PASSENGER: 'remove:passenger',
+  DELETE_PASSENGER: 'delete:passenger',
+  RESTORE_PASSENGER: 'restore:passenger',
 
   // ==================== PAYMENT ====================
   CREATE_PAYMENT: 'create:payment',

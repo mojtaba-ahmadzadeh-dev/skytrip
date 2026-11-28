@@ -79,3 +79,37 @@ export enum RbacMessages {
   USER_NOT_FOUND = 'کاربر یافت نشد',
   FORBIDDEN = 'شما دسترسی به این عملیات ندارید',
 }
+
+export enum PassengerMessages {
+  // Create Passenger
+  PASSENGER_CREATED = 'مسافر با موفقیت ثبت شد',
+  PASSENGER_CREATE_FAILED = 'ثبت مسافر با خطا مواجه شد',
+
+  // Validation
+  BIRTH_DATE_CANNOT_BE_FUTURE = 'تاریخ تولد نمی‌تواند در آینده باشد',
+  INVALID_BIRTH_DATE = 'تاریخ تولد معتبر نیست',
+  INVALID_NATIONAL_CODE = 'کد ملی واردشده معتبر نیست',
+
+  // Authentication
+  USER_UNAUTHORIZED = 'لطفاً ابتدا وارد حساب کاربری خود شوید',
+
+  // Find Passenger
+  PASSENGER_NOT_FOUND = 'مسافر مورد نظر یافت نشد',
+  PASSENGERS_RETRIEVED = 'لیست مسافران با موفقیت دریافت شد',
+  PASSENGER_RETRIEVED = 'اطلاعات مسافر با موفقیت دریافت شد',
+
+  // Update Passenger
+  PASSENGER_UPDATED = 'اطلاعات مسافر با موفقیت ویرایش شد',
+  NO_PASSENGER_CHANGES = 'حداقل یک فیلد برای ویرایش ارسال کنید',
+
+  // Delete Passenger
+  PASSENGER_DELETED = 'مسافر با موفقیت حذف شد',
+
+  // Ownership
+  PASSENGER_ACCESS_DENIED = 'شما اجازه دسترسی به اطلاعات این مسافر را ندارید',
+
+  INVALID_PASSENGER_DATA = 'اطلاعات ارسالی برای ویرایش معتبر نیست',
+
+  PASSENGER_RESTORED = 'مسافر با موفقیت بازیابی شد',
+  PASSENGER_ALREADY_ACTIVE = 'این مسافر قبلاً بازیابی شده است',
+}
