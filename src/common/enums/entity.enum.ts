@@ -3,5 +3,6 @@ export enum EntityNames {
     OtpEntity = "otp",
     Permissions = "permissions",
     Roles = "roles",
-    Passenger = "passenger"
+    Passenger = "passenger",
+    City = "city"
 }
