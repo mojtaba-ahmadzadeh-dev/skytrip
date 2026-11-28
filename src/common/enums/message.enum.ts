@@ -113,3 +113,21 @@ export enum PassengerMessages {
   PASSENGER_RESTORED = 'مسافر با موفقیت بازیابی شد',
   PASSENGER_ALREADY_ACTIVE = 'این مسافر قبلاً بازیابی شده است',
 }
+
+export enum CityMessages {
+  CITY_CREATED = 'شهر با موفقیت ثبت شد',
+  CITY_ALREADY_EXISTS = 'این شهر در استان موردنظر قبلاً ثبت شده است',
+  CITY_NOT_FOUND = 'شهر موردنظر یافت نشد',
+  CITIES_RETRIEVED = 'لیست شهرها با موفقیت دریافت شد',
+  CITY_RETRIEVED = 'اطلاعات شهر با موفقیت دریافت شد',
+  CITY_UPDATED = 'اطلاعات شهر با موفقیت ویرایش شد',
+  CITY_DELETED = 'شهر با موفقیت حذف شد',
+  CITY_ALREADY_INACTIVE = 'این شهر قبلاً غیرفعال شده است',
+  CITY_ACTIVATED = 'شهر با موفقیت فعال شد',
+  CITY_ALREADY_ACTIVE = 'این شهر قبلاً فعال شده است',
+  NO_CITY_CHANGES = 'حداقل یک فیلد برای ویرایش ارسال کنید',
+  NOT_FOUND = 'شهر مورد نظر یافت نشد',
+  ALREADY_EXISTS = 'این شهر در استان و کشور مورد نظر قبلاً ثبت شده است',
+  UPDATED_SUCCESSFULLY = 'اطلاعات شهر با موفقیت ویرایش شد',
+  CITY_RESTORED = 'شهر با موفقیت بازیابی شد',
+}

@@ -72,6 +72,12 @@ export const PermissionsList = {
   DELETE_PASSENGER: 'delete:passenger',
   RESTORE_PASSENGER: 'restore:passenger',
 
+  CREATE_CITY: 'create_city',
+  UPDATE_CITY: 'update_city',
+  DELETE_CITY: 'delete_city',
+  VIEW_CITY: 'view_city',
+  RESTORE_CITY: 'restore_city',
+
   // ==================== PAYMENT ====================
   CREATE_PAYMENT: 'create:payment',
   FIND_PAYMENTS: 'find:payments',

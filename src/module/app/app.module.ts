@@ -6,6 +6,7 @@ import { AuthModule } from '../auth/auth.module.js';
 import { UserModule } from '../user/user.module.js';
 import { RBACModule } from '../RBAC/rbac.module.js';
 import { PassengerModule } from '../passenger/passenger.module.js';
+import { CityModule } from '../city/city.module.js';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { PassengerModule } from '../passenger/passenger.module.js';
     AuthModule,
     UserModule,
     RBACModule,
-    PassengerModule
+    PassengerModule,
+    CityModule
   ],
 })
 export class AppModule {}
